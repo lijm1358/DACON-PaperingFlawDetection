@@ -1,6 +1,11 @@
 {
     "model": "EfficientNetB0",
     "dataset": "CustomDataset",
+    "augment": {
+        "train": "TrainAugmentation",
+        "test": "TestAugmentation",
+        "resize": [224, 224]
+    },
     "criterion": {
         "type": "cross_entropy",
         "args": {

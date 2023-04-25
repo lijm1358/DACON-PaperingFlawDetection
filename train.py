@@ -48,24 +48,20 @@ def main(config):
     le = preprocessing.LabelEncoder()
     train_ds['label'] = le.fit_transform(train_ds['label'])
     val_ds['label'] = le.transform(val_ds['label'])
-    
-    train_transform = A.Compose([
-        A.Resize(224, 224),
-        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
-        ToTensorV2()
-    ])
-    
-    test_transform = A.Compose([
-        A.Resize(224, 224),
-        A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225), max_pixel_value=255.0, always_apply=False, p=1.0),
-        ToTensorV2()
-    ])
 
     dataset_module = getattr(import_module("data"), config["dataset"])
     
+    train_transform_module = getattr(import_module("data"), config["augment"]["train"])
+    train_transform = train_transform_module(
+        resize=config["augment"]["resize"]
+    )
     train_dataset = dataset_module(train_ds['img_path'].values, train_ds['label'].values, train_transform)
     train_loader = DataLoader(train_dataset, batch_size=config["params"]["batch_size"], shuffle=False, num_workers=4)
 
+    test_transform_module = getattr(import_module("data"), config["augment"]["test"])
+    test_transform = test_transform_module(
+        resize=config["augment"]["resize"]
+    )
     val_dataset = dataset_module(val_ds['img_path'].values, val_ds['label'].values, test_transform)
     val_loader = DataLoader(val_dataset, batch_size=config["params"]["batch_size"], shuffle=False, num_workers=4)
     
@@ -147,7 +143,7 @@ def main(config):
             print(f"No validation performace improvement until {counter} iteration. Training stopped.")
             break
         
-    print("Best loss and score is {best_loss}, and {best_score:4.4%}.")
+    print(f"Best loss and score is {best_loss}, and {best_score:4.4%}.")
 
 
 if __name__ == '__main__':
