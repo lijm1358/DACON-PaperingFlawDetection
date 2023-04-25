@@ -15,7 +15,17 @@ import json
 from loss import create_criterion
 from datetime import datetime
 import os
+import random
 
+
+def seed_everything(seed):
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)  # if use multi-GPU
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    np.random.seed(seed)
+    random.seed(seed)
 
 def make_model_path(base_path):
     now = datetime.now()
@@ -25,6 +35,7 @@ def make_model_path(base_path):
     return model_path
 
 def main(config):
+    seed_everything(config["seed"])
     model_path = make_model_path(config["model_save_dir"])
     all_img_list = glob.glob('./dataset/train/*/*')
 

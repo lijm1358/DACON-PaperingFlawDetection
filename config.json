@@ -31,5 +31,6 @@
         "epochs": 10,
         "batch_size": 32
     },
-    "model_save_dir": "./model"
+    "model_save_dir": "./model",
+    "seed": 42
 }
