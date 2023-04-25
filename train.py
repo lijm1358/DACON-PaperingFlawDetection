@@ -36,7 +36,6 @@ def make_model_path(base_path):
 
 def main(config):
     seed_everything(config["seed"])
-    model_path = make_model_path(config["model_save_dir"])
     all_img_list = glob.glob(os.path.join(config["data_save_dir"], "train/*/*"))
 
     df = pd.DataFrame(columns=['img_path', 'label'])
@@ -85,6 +84,10 @@ def main(config):
     patience = config["earlystop"]["patience"]
     counter = 0
     best_model = None
+    
+    model_path = make_model_path(config["model_save_dir"])
+    with open(os.path.join(model_path, "model_config.json"), "w") as f:
+        json.dump(config, f, indent=4)
     
     for epoch in range(1, config["params"]["epochs"]+1):
         model.train()
@@ -144,6 +147,11 @@ def main(config):
             break
         
     print(f"Best loss and score is {best_loss}, and {best_score:4.4%}.")
+    with open(os.path.join(model_path, "model_config.json"), "w") as f:
+        model_conf = config
+        model_conf["best_loss"] = best_loss
+        model_conf["best_score"] = best_score
+        json.dump(model_conf, f, indent=4)
 
 
 if __name__ == '__main__':
