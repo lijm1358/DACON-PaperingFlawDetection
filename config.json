@@ -29,7 +29,8 @@
     },
     "params": {
         "epochs": 10,
-        "batch_size": 32
+        "batch_size": 32,
+        "val_ratio": 0.3
     },
     "model_save_dir": "./model",
     "data_save_dir": "./dataset",

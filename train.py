@@ -43,7 +43,7 @@ def main(config):
     df['img_path'] = all_img_list
     df['label'] = df['img_path'].apply(lambda x : str(x).split('/')[-2])
 
-    train_ds, val_ds, _, _ = train_test_split(df, df['label'], test_size=0.3, stratify=df['label'], random_state=42)
+    train_ds, val_ds, _, _ = train_test_split(df, df['label'], test_size=config["params"]["val_ratio"], stratify=df['label'], random_state=42)
 
     le = preprocessing.LabelEncoder()
     train_ds['label'] = le.fit_transform(train_ds['label'])
