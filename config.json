@@ -32,5 +32,6 @@
         "batch_size": 32
     },
     "model_save_dir": "./model",
+    "data_save_dir": "./dataset",
     "seed": 42
 }

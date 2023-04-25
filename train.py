@@ -37,7 +37,7 @@ def make_model_path(base_path):
 def main(config):
     seed_everything(config["seed"])
     model_path = make_model_path(config["model_save_dir"])
-    all_img_list = glob.glob('./dataset/train/*/*')
+    all_img_list = glob.glob(os.path.join(config["data_save_dir"], "train/*/*"))
 
     df = pd.DataFrame(columns=['img_path', 'label'])
     df['img_path'] = all_img_list
@@ -143,7 +143,7 @@ def main(config):
         else:
             counter += 1
         
-        if counter == config["earlystop"]["patience"]:
+        if counter == patience:
             print(f"No validation performace improvement until {counter} iteration. Training stopped.")
             break
         
