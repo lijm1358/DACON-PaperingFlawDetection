@@ -15,7 +15,7 @@ import json
 from loss import create_criterion
 from datetime import datetime
 import os
-
+import wandb
 
 def make_model_path(base_path):
     now = datetime.now()
@@ -25,6 +25,21 @@ def make_model_path(base_path):
     return model_path
 
 def main(config):
+    #Wandb Initialization
+    wandb.init(
+        project = 'papering',
+        
+        config = {
+            "Model" : config['model'],
+            "Dataset" : config['dataset'],
+            "Optimizer" : config['optimizer']['type'],
+            "Learning Rate" : config['optimizer']['args']['lr'],
+            "Scheduler" : config['scheduler']['type'],
+            "Epoch" : config['params']['epochs'],
+            "Batch Size" : config['params']['batch_size']
+        }
+    )
+    
     model_path = make_model_path(config["model_save_dir"])
     all_img_list = glob.glob('./dataset/train/*/*')
 
@@ -135,6 +150,12 @@ def main(config):
         if counter == config["earlystop"]["patience"]:
             print(f"No validation performace improvement until {counter} iteration. Training stopped.")
             break
+            
+        #Wandb Logging for each epoch
+        wandb.log({
+            'Validation Score':_val_score,
+            'Validation Loss': _val_loss
+        })
         
     print("Best loss and score is {best_loss}, and {best_score:4.4%}.")
 
