@@ -21,6 +21,9 @@ def main():
     # default['learning_rate', 'epochs', ...]
     default = properties['DEFAULT']
     
+    # Set Device
+    device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
+    
     all_img_list = glob.glob('./dataset/train/*/*')
 
     df = pd.DataFrame(columns=['img_path', 'label'])
@@ -56,9 +59,9 @@ def main():
     
     model_module = getattr(import_module("model"), "EfficientNetB0")  # default: BaseModel
     model = model_module()
-    model.to("cuda")
+    model.to(device)
     
-    criterion = nn.CrossEntropyLoss().to("cuda")
+    criterion = nn.CrossEntropyLoss().to(device)
     optimizer = torch.optim.Adam(params = model.parameters(), lr = 3e-4)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=2, threshold_mode='abs', min_lr=1e-8, verbose=True)
     
@@ -69,8 +72,8 @@ def main():
         model.train()
         train_loss = []
         for imgs, labels in tqdm(iter(train_loader)):
-            imgs = imgs.float().to("cuda")
-            labels = labels.to("cuda")
+            imgs = imgs.float().to(device)
+            labels = labels.to(device)
             
             optimizer.zero_grad()
             
@@ -88,8 +91,8 @@ def main():
 
         with torch.no_grad():
             for imgs, labels in tqdm(iter(val_loader)):
-                imgs = imgs.float().to("cuda")
-                labels = labels.to("cuda")
+                imgs = imgs.float().to(device)
+                labels = labels.to(device)
                 
                 pred = model(imgs)
                 
