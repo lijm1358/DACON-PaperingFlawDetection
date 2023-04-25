@@ -13,8 +13,19 @@ import numpy as np
 from sklearn.metrics import f1_score
 import json
 from loss import create_criterion
+from datetime import datetime
+import os
+
+
+def make_model_path(base_path):
+    now = datetime.now()
+    dt_string = now.strftime("%Y.%m.%d-%H:%M:%S")
+    model_path = os.path.join(base_path, dt_string)
+    os.makedirs(model_path, exist_ok=False)
+    return model_path
 
 def main(config):
+    model_path = make_model_path(config["model_save_dir"])
     all_img_list = glob.glob('./dataset/train/*/*')
 
     df = pd.DataFrame(columns=['img_path', 'label'])
@@ -51,7 +62,6 @@ def main(config):
     model = model_module()
     model.to("cuda")
     
-    # criterion = nn.CrossEntropyLoss().to("cuda")
     criterion = create_criterion(config["criterion"]["type"], **config["criterion"]["args"])
     opt_module = getattr(import_module("torch.optim"), config["optimizer"]["type"])
     optimizer = opt_module(
@@ -64,6 +74,9 @@ def main(config):
     )
     
     best_score = 0
+    best_loss = np.inf
+    patience = config["earlystop"]["patience"]
+    counter = 0
     best_model = None
     
     for epoch in range(1, config["params"]["epochs"]+1):
@@ -110,9 +123,20 @@ def main(config):
         if scheduler is not None:
             scheduler.step(_val_score)
             
-        if best_score < _val_score:
+        if best_loss > _val_loss:
+            print(f"New best model for val f1 : {_val_score:4.4%}, loss: {_val_loss:.5f}! saving the best model..")
+            torch.save(model.state_dict(), f"{model_path}/best.pth")
+            best_loss = _val_loss
             best_score = _val_score
-            best_model = model
+            counter = 0
+        else:
+            counter += 1
+        
+        if counter == config["earlystop"]["patience"]:
+            print(f"No validation performace improvement until {counter} iteration. Training stopped.")
+            break
+        
+    print("Best loss and score is {best_loss}, and {best_score:4.4%}.")
 
 
 if __name__ == '__main__':

@@ -24,8 +24,12 @@
             "verbose": "True"
         }
     },
+    "earlystop": {
+        "patience": 2
+    },
     "params": {
         "epochs": 10,
         "batch_size": 32
-    }
+    },
+    "model_save_dir": "./model"
 }
