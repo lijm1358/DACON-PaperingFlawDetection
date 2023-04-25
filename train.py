@@ -11,8 +11,9 @@ from tqdm import tqdm
 import torch
 import numpy as np
 from sklearn.metrics import f1_score
+import json
 
-def main():
+def main(config):
     all_img_list = glob.glob('./dataset/train/*/*')
 
     df = pd.DataFrame(columns=['img_path', 'label'])
@@ -37,27 +38,34 @@ def main():
         ToTensorV2()
     ])
 
-    dataset_module = getattr(import_module("data"), "CustomDataset")
+    dataset_module = getattr(import_module("data"), config["dataset"])
     dataset = dataset_module(train_ds['img_path'], train_ds['label'], train_transform)
     
     train_dataset = dataset_module(train_ds['img_path'].values, train_ds['label'].values, train_transform)
-    train_loader = DataLoader(train_dataset, batch_size = 32, shuffle=False, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=config["params"]["batch_size"], shuffle=False, num_workers=4)
 
     val_dataset = dataset_module(val_ds['img_path'].values, val_ds['label'].values, test_transform)
-    val_loader = DataLoader(val_dataset, batch_size=32, shuffle=False, num_workers=4)
+    val_loader = DataLoader(val_dataset, batch_size=config["params"]["batch_size"], shuffle=False, num_workers=4)
     
-    model_module = getattr(import_module("model"), "EfficientNetB0")  # default: BaseModel
+    model_module = getattr(import_module("model"), config["model"])
     model = model_module()
     model.to("cuda")
     
     criterion = nn.CrossEntropyLoss().to("cuda")
-    optimizer = torch.optim.Adam(params = model.parameters(), lr = 3e-4)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='max', factor=0.5, patience=2, threshold_mode='abs', min_lr=1e-8, verbose=True)
+    opt_module = getattr(import_module("torch.optim"), config["optimizer"]["type"])
+    optimizer = opt_module(
+        filter(lambda p: p.requires_grad, model.parameters()),
+        **config["optimizer"]["args"]
+    )
+    sch_module = getattr(import_module("torch.optim.lr_scheduler"), config["scheduler"]["type"])
+    scheduler = sch_module(
+        optimizer, **config["scheduler"]["args"]
+    )
     
     best_score = 0
     best_model = None
     
-    for epoch in range(1, 10+1):
+    for epoch in range(1, config["params"]["epochs"]+1):
         model.train()
         train_loss = []
         for imgs, labels in tqdm(iter(train_loader)):
@@ -107,4 +115,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    with open('config.json') as f:
+        config = json.load(f)
+    main(config)

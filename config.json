@@ -1,0 +1,25 @@
+{
+    "model": "EfficientNetB0",
+    "dataset": "CustomDataset",
+    "optimizer": {
+        "type": "Adam",
+        "args": {
+            "lr": 3e-4
+        }
+    },
+    "scheduler": {
+        "type": "ReduceLROnPlateau",
+        "args": {
+            "mode": "max", 
+            "factor": 0.5,
+            "patience": 2,
+            "threshold_mode": "abs",
+            "min_lr": 1e-8,
+            "verbose": "True"
+        }
+    },
+    "params": {
+        "epochs": 10,
+        "batch_size": 32
+    }
+}
