@@ -11,8 +11,16 @@ from tqdm import tqdm
 import torch
 import numpy as np
 from sklearn.metrics import f1_score
+import configparser
 
 def main():
+    # Load Config File and Allocate
+    properties = configparser.ConfigParser()
+    
+    properties.read('./config.ini')
+    # default['learning_rate', 'epochs', ...]
+    default = properties['DEFAULT']
+    
     all_img_list = glob.glob('./dataset/train/*/*')
 
     df = pd.DataFrame(columns=['img_path', 'label'])
