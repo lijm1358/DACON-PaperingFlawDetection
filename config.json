@@ -1,6 +1,12 @@
 {
     "model": "EfficientNetB0",
     "dataset": "CustomDataset",
+    "criterion": {
+        "type": "cross_entropy",
+        "args": {
+
+        }
+    },
     "optimizer": {
         "type": "Adam",
         "args": {

@@ -12,6 +12,7 @@ import torch
 import numpy as np
 from sklearn.metrics import f1_score
 import json
+from loss import create_criterion
 
 def main(config):
     all_img_list = glob.glob('./dataset/train/*/*')
@@ -50,7 +51,8 @@ def main(config):
     model = model_module()
     model.to("cuda")
     
-    criterion = nn.CrossEntropyLoss().to("cuda")
+    # criterion = nn.CrossEntropyLoss().to("cuda")
+    criterion = create_criterion(config["criterion"]["type"], **config["criterion"]["args"])
     opt_module = getattr(import_module("torch.optim"), config["optimizer"]["type"])
     optimizer = opt_module(
         filter(lambda p: p.requires_grad, model.parameters()),
