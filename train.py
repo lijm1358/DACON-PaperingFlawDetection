@@ -16,8 +16,8 @@ from sklearn.model_selection import train_test_split
 from torch import nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-import wandb
 
+import wandb
 from loss import create_criterion
 
 
@@ -30,6 +30,7 @@ def seed_everything(seed):
     np.random.seed(seed)
     random.seed(seed)
 
+
 def make_model_path(base_path):
     now = datetime.now()
     dt_string = now.strftime("%Y.%m.%d-%H:%M:%S")
@@ -39,23 +40,22 @@ def make_model_path(base_path):
 
 
 def main(config):
-    #Wandb Initialization
+    # Wandb Initialization
     wandb.init(
-        project = 'papering',
-        
-        config = {
-            "Model" : config['model'],
-            "Dataset" : config['dataset'],
-            "Optimizer" : config['optimizer']['type'],
-            "Learning Rate" : config['optimizer']['args']['lr'],
-            "Scheduler" : config['scheduler']['type'],
-            "Epoch" : config['params']['epochs'],
-            "Batch Size" : config['params']['batch_size']
-        }
+        project="papering",
+        config={
+            "Model": config["model"],
+            "Dataset": config["dataset"],
+            "Optimizer": config["optimizer"]["type"],
+            "Learning Rate": config["optimizer"]["args"]["lr"],
+            "Scheduler": config["scheduler"]["type"],
+            "Epoch": config["params"]["epochs"],
+            "Batch Size": config["params"]["batch_size"],
+        },
     )
-    
+
     seed_everything(config["seed"])
-    all_img_list = glob.glob('./dataset/train/*/*')
+    all_img_list = glob.glob(os.path.join(config["data_save_dir"], "train/*/*"))
 
     df = pd.DataFrame(columns=["img_path", "label"])
     df["img_path"] = all_img_list
@@ -176,12 +176,9 @@ def main(config):
         if counter == patience:
             print(f"No validation performace improvement until {counter} iteration. Training stopped.")
             break
-            
-        #Wandb Logging for each epoch
-        wandb.log({
-            'Validation Score':_val_score,
-            'Validation Loss': _val_loss
-        })
+
+        # Wandb Logging for each epoch
+        wandb.log({"Validation Score": _val_score, "Validation Loss": _val_loss})
 
     print(f"Best loss and score is {best_loss}, and {best_score:4.4%}.")
     with open(os.path.join(model_path, "model_config.json"), "w") as f:
@@ -189,8 +186,8 @@ def main(config):
         model_conf["best_loss"] = best_loss
         model_conf["best_score"] = best_score
         json.dump(model_conf, f, indent=4)
-        
-    print("Best loss and score is {best_loss}, and {best_score:4.4%}.")
+
+    print(f"Best loss and score is {best_loss}, and {best_score:4.4%}.")
 
 
 if __name__ == "__main__":
