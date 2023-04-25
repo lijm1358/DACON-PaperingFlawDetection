@@ -1,6 +1,11 @@
 {
     "model": "EfficientNetB0",
     "dataset": "CustomDataset",
+    "augment": {
+        "train": "TrainAugmentation",
+        "test": "TestAugmentation",
+        "resize": [224, 224]
+    },
     "criterion": {
         "type": "cross_entropy",
         "args": {
@@ -29,7 +34,10 @@
     },
     "params": {
         "epochs": 10,
-        "batch_size": 32
+        "batch_size": 32,
+        "val_ratio": 0.3
     },
-    "model_save_dir": "./model"
+    "model_save_dir": "./model",
+    "data_save_dir": "./dataset",
+    "seed": 42
 }
