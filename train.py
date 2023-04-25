@@ -39,7 +39,6 @@ def main(config):
     ])
 
     dataset_module = getattr(import_module("data"), config["dataset"])
-    dataset = dataset_module(train_ds['img_path'], train_ds['label'], train_transform)
     
     train_dataset = dataset_module(train_ds['img_path'].values, train_ds['label'].values, train_transform)
     train_loader = DataLoader(train_dataset, batch_size=config["params"]["batch_size"], shuffle=False, num_workers=4)
