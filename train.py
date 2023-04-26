@@ -178,7 +178,7 @@ def main(config):
             break
 
         # Wandb Logging for each epoch
-        wandb.log({"Validation Score": _val_score, "Validation Loss": _val_loss})
+        wandb.log({"Validation Score": _val_score, "Validation Loss": _val_loss, "Train Loss": _train_loss})
 
     print(f"Best loss and score is {best_loss}, and {best_score:4.4%}.")
     with open(os.path.join(model_path, "model_config.json"), "w") as f:
