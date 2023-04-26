@@ -52,6 +52,7 @@ def main(config):
             "Epoch": config["params"]["epochs"],
             "Batch Size": config["params"]["batch_size"],
         },
+        name="Yang)" + config["model"] + config["optimizer"]["args"]["lr"]
     )
 
     seed_everything(config["seed"])
