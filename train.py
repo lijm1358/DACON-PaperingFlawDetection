@@ -5,19 +5,16 @@ import random
 from datetime import datetime
 from importlib import import_module
 
-import albumentations as A
 import numpy as np
 import pandas as pd
 import torch
-from albumentations.pytorch.transforms import ToTensorV2
+import wandb
 from sklearn import preprocessing
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
-from torch import nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-import wandb
 from loss import create_criterion
 
 
@@ -52,7 +49,7 @@ def main(config):
             "Epoch": config["params"]["epochs"],
             "Batch Size": config["params"]["batch_size"],
         },
-        name="Yang)" + config["model"] + config["optimizer"]["args"]["lr"]
+        name="Yang)" + str(config["model"]) + str(config["optimizer"]["args"]["lr"]),
     )
 
     seed_everything(config["seed"])
@@ -113,7 +110,6 @@ def main(config):
     best_loss = np.inf
     patience = config["earlystop"]["patience"]
     counter = 0
-    best_model = None
 
     model_path = make_model_path(config["model_save_dir"])
     with open(os.path.join(model_path, "model_config.json"), "w") as f:
