@@ -1,8 +1,7 @@
 import albumentations as A
 import cv2
-import matplotlib.pyplot as plt
 from albumentations.pytorch.transforms import ToTensorV2
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 
 
 class TrainAugmentation:

@@ -1,5 +1,4 @@
 import timm
-import torch
 from torch import nn
 
 
@@ -10,7 +9,8 @@ class EfficientNetB0(nn.Module):
 
     def forward(self, x):
         return self.model(x)
-    
+
+
 class EfficientNetB2(nn.Module):
     def __init__(self):
         super().__init__()
@@ -18,7 +18,8 @@ class EfficientNetB2(nn.Module):
 
     def forward(self, x):
         return self.model(x)
-    
+
+
 class EfficientNetB4(nn.Module):
     def __init__(self):
         super().__init__()
