@@ -12,6 +12,7 @@ import wandb
 from sklearn import preprocessing
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
+from sklearn.utils.class_weight import compute_class_weight
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
@@ -34,6 +35,13 @@ def make_model_path(base_path):
     model_path = os.path.join(base_path, dt_string)
     os.makedirs(model_path, exist_ok=False)
     return model_path
+
+
+def calculate_class_weight(train_df):
+    train_y = train_df["label"]
+    class_weight = compute_class_weight(class_weight="balanced", classes=np.unique(train_y), y=train_y)
+    
+    return class_weight
 
 
 def main(config):
@@ -70,6 +78,8 @@ def main(config):
     le = preprocessing.LabelEncoder()
     train_ds["label"] = le.fit_transform(train_ds["label"])
     val_ds["label"] = le.transform(val_ds["label"])
+    
+    class_weight = calculate_class_weight(train_ds)
 
     dataset_module = getattr(import_module("data"), config["dataset"])
 
@@ -97,7 +107,12 @@ def main(config):
     model = model_module()
     model.to("cuda")
 
-    criterion = create_criterion(config["criterion"]["type"], **config["criterion"]["args"])
+    if config["criterion"]["weight"] == True:
+        print("Using class weight")
+        class_weight = torch.tensor(class_weight).to(torch.float32).to("cuda")
+        criterion = create_criterion(config["criterion"]["type"], weight=class_weight, **config["criterion"]["args"])
+    else:
+        criterion = create_criterion(config["criterion"]["type"], **config["criterion"]["args"])
     opt_module = getattr(import_module("torch.optim"), config["optimizer"]["type"])
     optimizer = opt_module(
         filter(lambda p: p.requires_grad, model.parameters()),
