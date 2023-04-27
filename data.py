@@ -11,8 +11,8 @@ class TrainAugmentation:
             [
                 A.Resize(resize[0], resize[1]),
                 A.Normalize(
-                    mean=(0.485, 0.456, 0.406),
-                    std=(0.229, 0.224, 0.225),
+                    mean=(0.601, 0.593, 0.577),
+                    std=(0.087, 0.091, 0.095),
                     max_pixel_value=255.0,
                     always_apply=False,
                     p=1.0,
@@ -31,8 +31,8 @@ class TestAugmentation:
             [
                 A.Resize(resize[0], resize[1]),
                 A.Normalize(
-                    mean=(0.485, 0.456, 0.406),
-                    std=(0.229, 0.224, 0.225),
+                    mean=(0.601, 0.593, 0.577),
+                    std=(0.087, 0.091, 0.095),
                     max_pixel_value=255.0,
                     always_apply=False,
                     p=1.0,
