@@ -1,5 +1,5 @@
 {
-    "model": "ConvNeXtSmall",
+    "model": "EfficientNetB2",
     "dataset": "CustomDataset",
     "augment": {
         "train": "TrainAugmentation",
