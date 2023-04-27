@@ -132,9 +132,9 @@ def main(config):
 
             train_loss.append(loss.item())
 
-            model.eval()
-            val_loss = []
-            preds, true_labels = [], []
+        model.eval()
+        val_loss = []
+        preds, true_labels = [], []
 
         with torch.no_grad():
             for imgs, labels in tqdm(iter(val_loader)):
