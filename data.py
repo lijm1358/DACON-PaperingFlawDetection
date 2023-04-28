@@ -6,13 +6,12 @@ from torch.utils.data import Dataset
 
 class TrainAugmentation:
     def __init__(self, resize):
-        print(resize)
         self.transform = A.Compose(
             [
                 A.Resize(resize[0], resize[1]),
                 A.Normalize(
-                    mean=(0.601, 0.593, 0.577),
-                    std=(0.087, 0.091, 0.095),
+                    mean=(0.577, 0.593, 0.601),
+                    std=(0.095, 0.091, 0.087),
                     max_pixel_value=255.0,
                     always_apply=False,
                     p=1.0,
@@ -31,8 +30,8 @@ class TestAugmentation:
             [
                 A.Resize(resize[0], resize[1]),
                 A.Normalize(
-                    mean=(0.601, 0.593, 0.577),
-                    std=(0.087, 0.091, 0.095),
+                    mean=(0.577, 0.593, 0.601),
+                    std=(0.095, 0.091, 0.087),
                     max_pixel_value=255.0,
                     always_apply=False,
                     p=1.0,
