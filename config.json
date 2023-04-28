@@ -1,5 +1,5 @@
 {
-    "model": "EfficientNetB2",
+    "model": "ConvNeXtSmall",
     "dataset": "CustomDataset",
     "augment": {
         "train": "TrainAugmentation",
@@ -10,13 +10,17 @@
         ]
     },
     "criterion": {
-        "type": "cross_entropy",
-        "args": {}
+        "type": "label_smoothing",
+        "weight": false,
+        "args": {
+            "classes": 19,
+            "smoothing": 0.3
+        }
     },
     "optimizer": {
         "type": "Adam",
         "args": {
-            "lr": 0.0003
+            "lr": 0.0004
         }
     },
     "scheduler": {
@@ -41,6 +45,6 @@
     "model_save_dir": "./model",
     "data_save_dir": "./dataset",
     "seed": 42,
-    "best_loss": 0.6494876191471562,
-    "best_score": 0.8582648620629509
+    "best_loss": 1.7384596774072358,
+    "best_score": 0.8531490727980314
 }
