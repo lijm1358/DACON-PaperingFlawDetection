@@ -56,13 +56,14 @@ class CustomDataset(Dataset):
 
         image = cv2.imread(img_path)
 
-        if self.transforms is not None:
-            image = self.transforms(image=image)["image"]
-
         if self.label_list is not None:
             label = self.label_list[index]
+            if self.transforms is not None:
+                image = self.transforms[label](image=image)["image"]
             return image, label
         else:
+            if self.transforms is not None:
+                image = self.transforms[0](image=image)["image"]
             return image
 
     def __len__(self):

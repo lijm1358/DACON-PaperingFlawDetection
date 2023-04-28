@@ -46,19 +46,19 @@ def calculate_class_weight(train_df):
 
 def main(config):
     # Wandb Initialization
-    wandb.init(
-        project="papering",
-        config={
-            "Model": config["model"],
-            "Dataset": config["dataset"],
-            "Optimizer": config["optimizer"]["type"],
-            "Learning Rate": config["optimizer"]["args"]["lr"],
-            "Scheduler": config["scheduler"]["type"],
-            "Epoch": config["params"]["epochs"],
-            "Batch Size": config["params"]["batch_size"],
-        },
-        name="Lee)" + str(config["model"]) + str(config["optimizer"]["args"]["lr"]),
-    )
+    # wandb.init(
+    #     project="papering",
+    #     config={
+    #         "Model": config["model"],
+    #         "Dataset": config["dataset"],
+    #         "Optimizer": config["optimizer"]["type"],
+    #         "Learning Rate": config["optimizer"]["args"]["lr"],
+    #         "Scheduler": config["scheduler"]["type"],
+    #         "Epoch": config["params"]["epochs"],
+    #         "Batch Size": config["params"]["batch_size"],
+    #     },
+    #     name="Lee)" + str(config["model"]) + str(config["optimizer"]["args"]["lr"]),
+    # )
 
     seed_everything(config["seed"])
     all_img_list = glob.glob(os.path.join(config["data_save_dir"], "train/*/*"))
@@ -83,8 +83,12 @@ def main(config):
 
     dataset_module = getattr(import_module("data"), config["dataset"])
 
-    train_transform_module = getattr(import_module("data"), config["augment"]["train"])
-    train_transform = train_transform_module(resize=config["augment"]["resize"])
+    train_transform = config["augment"]["train"].copy()
+    for label, augment in config["augment"]["train"].items():
+        train_transform_module = getattr(import_module("data"), augment)
+        train_transform[label] = train_transform_module(resize=config["augment"]["resize"])
+    train_transform = {le.transform([k])[0]: v for k, v in train_transform.items()}
+    
     train_dataset = dataset_module(train_ds["img_path"].values, train_ds["label"].values, train_transform)
     train_loader = DataLoader(
         train_dataset,
@@ -93,8 +97,11 @@ def main(config):
         num_workers=4,
     )
 
-    test_transform_module = getattr(import_module("data"), config["augment"]["test"])
-    test_transform = test_transform_module(resize=config["augment"]["resize"])
+    test_transform = config["augment"]["train"].copy()
+    for label in test_transform:
+        test_transform_module = getattr(import_module("data"), config["augment"]["test"])
+        test_transform[label] = test_transform_module(resize=config["augment"]["resize"])
+    test_transform = {le.transform([k])[0]: v for k, v in test_transform.items()}
     val_dataset = dataset_module(val_ds["img_path"].values, val_ds["label"].values, test_transform)
     val_loader = DataLoader(
         val_dataset,
@@ -190,7 +197,7 @@ def main(config):
             break
 
         # Wandb Logging for each epoch
-        wandb.log({"Validation Score": _val_score, "Validation Loss": _val_loss, "Train Loss": _train_loss})
+        # wandb.log({"Validation Score": _val_score, "Validation Loss": _val_loss, "Train Loss": _train_loss})
 
     print(f"Best loss and score is {best_loss}, and {best_score:4.4%}.")
     with open(os.path.join(model_path, "model_config.json"), "w") as f:

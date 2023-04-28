@@ -2,7 +2,27 @@
     "model": "EfficientNetB2",
     "dataset": "CustomDataset",
     "augment": {
-        "train": "TrainAugmentation",
+        "train": {
+            "가구수정": "TrainAugmentation",
+            "걸레받이수정": "TrainAugmentation",
+            "곰팡이": "TrainAugmentation",
+            "꼬임": "TrainAugmentation",
+            "녹오염": "TrainAugmentation",
+            "들뜸": "TrainAugmentation",
+            "면불량": "TrainAugmentation",
+            "몰딩수정": "TrainAugmentation",
+            "반점": "TrainAugmentation",
+            "석고수정": "TrainAugmentation",
+            "오염": "TrainAugmentation",
+            "오타공": "TrainAugmentation",
+            "울음": "TrainAugmentation",
+            "이음부불량": "TrainAugmentation",
+            "창틀,문틀수정": "TrainAugmentation",
+            "터짐": "TrainAugmentation",
+            "틈새과다": "TrainAugmentation",
+            "피스": "TrainAugmentation",
+            "훼손": "TrainAugmentation"
+        }, 
         "test": "TestAugmentation",
         "resize": [
             448,
@@ -11,6 +31,7 @@
     },
     "criterion": {
         "type": "cross_entropy",
+        "weight": false,
         "args": {}
     },
     "optimizer": {
@@ -24,7 +45,7 @@
         "args": {
             "mode": "max",
             "factor": 0.5,
-            "patience": 2,
+            "patience": 5,
             "threshold_mode": "abs",
             "min_lr": 1e-08,
             "verbose": "True"
@@ -41,6 +62,6 @@
     "model_save_dir": "./model",
     "data_save_dir": "./dataset",
     "seed": 42,
-    "best_loss": 0.6494876191471562,
-    "best_score": 0.8582648620629509
+    "best_loss": 0.7175890685934009,
+    "best_score": 0.8121114477681514
 }
